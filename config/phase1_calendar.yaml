@@ -1,0 +1,23 @@
+# Phase 1 calendar mapping config
+
+# Backward-compatible flat keys (still supported):
+# Path to unified calendar table with canonical attributes.
+unified_calendar_path: data/reference/unified_calendar_map.csv
+
+# Optional raw -> canonical bridge mapping. If a raw week string cannot be parsed
+# by the loader, it will attempt this fallback join using the raw_week_label.
+raw_calendar_bridge_path: data/reference/calendar_map.csv
+
+# Optional reference to the metric config file (used by loader for metric normalization)
+metric_config: config/phase1_metrics.yaml
+
+# New nested structure preferred by the Calendar Mapping Engine
+calendar:
+  raw_week_column: "week"
+  raw_start_column: "week_start"
+  raw_end_column: "week_end"
+  unified_calendar_path: "data/reference/unified_calendar_map.csv"
+  raw_calendar_map_path: "data/reference/calendar_map.csv"
+  date_formats:
+    - "%d/%m/%Y"
+    - "%Y-%m-%d"

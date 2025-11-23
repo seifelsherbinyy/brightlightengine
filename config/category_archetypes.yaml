@@ -1,0 +1,46 @@
+industry_archetypes:
+  - FRESH_PERISHABLE
+  - AMBIENT_FOOD
+  - BEVERAGES
+  - BEAUTY_PERSONAL_CARE
+  - HOME_CARE
+  - BABY
+  - HEALTH
+  - ELECTRONICS_APPLIANCES
+
+gcc_archetypes:
+  - CONSUMABLES
+  - BEAUTY
+  - HEALTH_PERSONAL_CARE
+  - BABY
+  - ELECTRONICS
+  - LIFESTYLE
+  - PET_SUPPLIES
+
+# Mappings are intentionally lightweight; users can extend without code changes.
+mappings:
+  category_to_industry:
+    Grocery: AMBIENT_FOOD
+    Snacks: AMBIENT_FOOD
+    Beverages: BEVERAGES
+    Beauty: BEAUTY_PERSONAL_CARE
+    Personal Care: BEAUTY_PERSONAL_CARE
+    Home Care: HOME_CARE
+    Baby: BABY
+    Health: HEALTH
+    Electronics: ELECTRONICS_APPLIANCES
+  category_to_gcc:
+    Grocery: CONSUMABLES
+    Snacks: CONSUMABLES
+    Beverages: CONSUMABLES
+    Beauty: BEAUTY
+    Personal Care: HEALTH_PERSONAL_CARE
+    Home Care: CONSUMABLES
+    Baby: BABY
+    Health: HEALTH_PERSONAL_CARE
+    Electronics: ELECTRONICS
+  # Optional per-subcategory overrides
+  subcategory_overrides:
+    # Example structure:
+    # "Infant Formula": { industry: BABY, gcc: BABY }
+    {}

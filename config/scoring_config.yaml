@@ -1,0 +1,185 @@
+# Brightlight Phase 2 Scoring Engine configuration
+
+# Metric registry: each metric may specify winsorization limits, normalization method,
+# and whether higher values are better (otherwise inverted post-normalization).
+metrics:
+  # Session 2A groupings and defaults (added; existing keys preserved)
+  numeric: [gms, units, gv, cp, cppu, net_ppm, contribution_margin, onhand_units, aging_days, stockout_count]
+  percent: [instock_pct, soroos_pct, fo_pct, returns_rate, defect_rate]
+  currency: []
+  normalization_method: robust_zscore
+  # Base performance
+  gms: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+  units: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+  gv: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+
+  # Growth (computed in-engine)
+  gms_wow_pct: { winsor_limits: [0.01, 0.99], method: zscore, higher_is_better: true }
+  units_wow_pct: { winsor_limits: [0.01, 0.99], method: zscore, higher_is_better: true }
+  gv_wow_pct: { winsor_limits: [0.01, 0.99], method: zscore, higher_is_better: true }
+
+  gms_l4w_delta_pct: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+  units_l4w_delta_pct: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+  gv_l4w_delta_pct: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+
+  gms_l12w_delta_pct: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+  units_l12w_delta_pct: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+  gv_l12w_delta_pct: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+
+  # Availability/Service
+  instock_pct: { winsor_limits: [0.01, 0.99], method: percentile, higher_is_better: true }
+  soroos_pct: { winsor_limits: [0.01, 0.99], method: percentile, higher_is_better: false }
+  fo_pct: { winsor_limits: [0.01, 0.99], method: percentile, higher_is_better: false }
+
+  # Inventory risk
+  onhand_units: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: false }
+  aging_days: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: false }
+  stockout_count: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: false }
+
+  # Quality/Returns
+  returns_rate: { winsor_limits: [0.01, 0.99], method: percentile, higher_is_better: false }
+  defect_rate: { winsor_limits: [0.01, 0.99], method: percentile, higher_is_better: false }
+
+  # Profitability
+  cp: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: false }
+  cppu: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: false }
+  net_ppm: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+  contribution_margin: { winsor_limits: [0.01, 0.99], method: robust_zscore, higher_is_better: true }
+
+
+# Dimension score configuration: metrics and their weights (renormalized over available metrics per row)
+dimensions:
+  # Session 2A signal inputs/weights (feature signals) coexist with Phase 2 score metrics
+  profitability:
+    inputs: [cp__norm, cppu__norm, net_ppm__norm]
+    weights: [0.4, 0.3, 0.3]
+    metrics:
+      cp: 0.15
+      cppu: 0.15
+      net_ppm: 0.35
+      contribution_margin: 0.35
+  growth:
+    inputs: [gms_wow_pct, units_wow_pct, gv_wow_pct, gms_l4w_pct, units_l4w_pct, gms_l12w_pct, units_l12w_pct]
+    weights: [0.2, 0.2, 0.1, 0.2, 0.1, 0.1, 0.1]
+    metrics:
+      gms_wow_pct: 0.25
+      units_wow_pct: 0.20
+      gv_wow_pct: 0.15
+      gms_l4w_delta_pct: 0.15
+      units_l4w_delta_pct: 0.10
+      gms_l12w_delta_pct: 0.10
+      units_l12w_delta_pct: 0.05
+  availability:
+    inputs: [instock_pct__norm, soroos_pct__norm, fo_pct__norm]
+    weights: [0.5, 0.25, 0.25]
+    metrics:
+      instock_pct: 0.5
+      soroos_pct: 0.25
+      fo_pct: 0.25
+  inventory_risk:
+    inputs: []
+    weights: []
+    metrics:
+      onhand_units: 0.34
+      aging_days: 0.33
+      stockout_count: 0.33
+  quality:
+    inputs: []
+    weights: []
+    metrics:
+      returns_rate: 0.7
+      defect_rate: 0.3
+
+
+# Archetype weights over dimension scores; weights per archetype must sum to 1.0
+archetypes:
+  Fresh:
+    profitability: 0.15
+    growth: 0.20
+    availability: 0.35
+    inventory_risk: 0.15
+    quality: 0.15
+  Ambient:
+    profitability: 0.25
+    growth: 0.25
+    availability: 0.20
+    inventory_risk: 0.20
+    quality: 0.10
+  Beauty:
+    profitability: 0.30
+    growth: 0.20
+    availability: 0.20
+    inventory_risk: 0.10
+    quality: 0.20
+  Baby:
+    profitability: 0.20
+    growth: 0.25
+    availability: 0.25
+    inventory_risk: 0.10
+    quality: 0.20
+  Health:
+    profitability: 0.25
+    growth: 0.20
+    availability: 0.25
+    inventory_risk: 0.10
+    quality: 0.20
+
+
+# Category to archetype mapping
+category_archetype_mapping:
+  default: Ambient
+  mappings:
+    # Examples: override or extend as needed
+    - category_contains: "fresh"
+      archetype: Fresh
+    - category_contains: "beauty"
+      archetype: Beauty
+    - category_contains: "baby"
+      archetype: Baby
+    - category_contains: "health"
+      archetype: Health
+
+
+# Readiness thresholds (Session 2A) and final gating (Session 2B)
+readiness:
+  min_history_weeks: 6
+  null_pct_max: 0.3
+  volatility_max: 1.0
+  anomaly_max: 5
+  final:
+    require_history_weeks: 6
+    max_null_share: 0.25
+    allow_missing_dimensions: false
+
+# Session 2B composite score scaling
+composite:
+  min_score: 0
+  max_score: 100
+  rescale: true
+
+
+# Session 2A transforms and deltas
+transforms:
+  winsor_limits: [0.01, 0.99]
+  enable_minmax: false
+
+deltas:
+  enable_wow: true
+  enable_l4w: true
+  enable_l12w: true
+
+# Session 2b – Calendar flags (optional). Existing behavior remains if omitted.
+calendar:
+  use_phase1_enrichment: true
+  fallback_to_unified_calendar: true
+  seasonality_flags_enabled: true
+
+
+# Phase 2c – Metric Coverage & Score Reliability (optional)
+# If this block is omitted, the engine behaves exactly as before without coverage gating.
+coverage:
+  min_coverage_pct: 0.6               # fraction of weeks with non-null values required for a metric to be considered usable
+  min_history_weeks: 6                # minimum number of distinct weeks per ASIN to evaluate a metric
+  treat_all_zero_as_inactive: true    # if a metric has non-null values but all are zero, mark it as inactive
+  enforce_strict_for_dimensions: ["growth", "availability"]  # informational hook; scoring remains adaptive across all dims
+  min_dimensions_for_composite: 2     # require at least this many dimension scores present to accept composite

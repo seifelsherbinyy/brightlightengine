@@ -1,0 +1,397 @@
+paths:
+  output_root: "C:/Users/selsherb/Documents/AVS-E/CL/Brightlight"
+  raw_dir: data/raw
+  processed_dir: data/processed
+  logs_dir: logs
+  # Diagrams output directory (Topic C). If output_root is configured elsewhere,
+  # you can set this to ${paths.output_root}/diagrams. Defaults to local 'diagrams/'.
+  diagrams_dir: diagrams
+  # Product Master (project-root relative)
+  product_master_path: metadata/product_master.csv
+  calendar_map: data/reference/calendar_map.csv
+  masterfile: data/reference/Masterfile.xlsx
+  normalized_output: data/processed/normalized_phase1.parquet
+  ingestion_state: data/processed/ingestion_state.json
+  scorecards_dir: data/processed/scorecards
+  scorecard_vendor_csv: data/processed/scorecards/vendor_scorecard.csv
+  scorecard_vendor_parquet: data/processed/scorecards/vendor_scorecard.parquet
+  scorecard_asin_csv: data/processed/scorecards/asin_scorecard.csv
+  scorecard_asin_parquet: data/processed/scorecards/asin_scorecard.parquet
+  scorecard_audit_csv: data/processed/scorecards/score_audit.csv
+  scorecard_metadata: data/processed/scorecards/run_metadata.json
+  forecasts_dir: data/processed/forecasts
+  forecast_vendor_csv: data/processed/forecasts/vendor_forecasts.csv
+  forecast_vendor_parquet: data/processed/forecasts/vendor_forecasts.parquet
+  forecast_asin_csv: data/processed/forecasts/asin_forecasts.csv
+  forecast_asin_parquet: data/processed/forecasts/asin_forecasts.parquet
+  forecast_metadata: data/processed/forecasts/run_metadata.json
+  dashboard_dir: data/processed/dashboard
+  # Brightlight scoring outputs (Phase 2)
+  # If paths.output_root is configured externally, these can be redirected to
+  # ${paths.output_root}/data/processed/scoring. For portability, default locally.
+  scoring_root: data/processed/scoring
+  vendor_scorecards_parquet: ${paths.scoring_root}/vendor_scorecards.parquet
+  asin_scorecards_parquet: ${paths.scoring_root}/asin_scorecards.parquet
+  vendor_scoring_enriched_parquet: ${paths.scoring_root}/vendor_scoring_enriched.parquet
+  asin_scoring_enriched_parquet: ${paths.scoring_root}/asin_scoring_enriched.parquet
+  asin_l4w_performance_parquet: ${paths.scoring_root}/asin_l4w_performance.parquet
+  scoring_metadata_json: ${paths.scoring_root}/scoring_metadata.json
+  scoring_parameters_json: ${paths.scoring_root}/scoring_parameters.json
+logging:
+  level: INFO
+  file_name: phase1_ingestion.log
+  scoring_level: INFO
+  scoring_file_name: phase2_scoring.log
+  forecasting_level: INFO
+  forecasting_file_name: phase4_forecasting.log
+  pipeline_level: INFO
+  pipeline_file_name: brightstar_pipeline.log
+registry:
+  metric_registry: "metadata/metric_registry.csv"
+  pending_metrics: "metadata/new_metrics_pending.csv"
+ingestion:
+  vendor_column: 0
+  asin_column: 1
+  metric_columns_start: 2
+  id_columns:
+    - Vendor
+    - ASIN
+  column_aliases:
+    vendor:
+      - Vendor
+      - Vendor Code
+      - Vendor_ID
+      - vendor
+      - vendor code
+      - VendorCode
+    asin:
+      - ASIN
+      - asin
+      - A S I N
+      - a s i n
+      - Asin
+      - ASIN#
+      - Product ASIN
+  value_round: 4
+  deduplicate: true
+  force_long_format: false
+  allowed_extensions:
+    - .csv
+    - .xlsx
+  output_format: parquet
+calendar_mapping:
+  week_label_column: week_label
+  start_date_column: week_start
+  end_date_column: week_end
+summary:
+  enabled: true
+  template: "Processed {total_rows} rows across {unique_weeks} weeks. Last week: {last_week}."
+masterfile:
+  sheet_name: Master
+  columns:
+    asin: ASIN
+    vendor_code: Vendor Code
+    vendor_name: Vendor Name
+scoring:
+  normalized_input: data/processed/normalized_phase1.parquet
+  aggregation: mean
+  fallback_normalized_value: 0.5
+  composite_scale: 1000
+  # Scoring model (Phase 2 full completion)
+  aggregation_window: "L4W"   # options: L4W, ALL
+  # Zero-semantics and signal-aware rules (per metric). This dictionary is read by Phase 2.
+  metric_zero_semantics:
+    Product_GMS:
+      zero_semantics: "bad_zero"
+      treat_zero_as_missing: true
+      min_signal_threshold: 10.0
+      allow_all_zero_series: false
+    Net_Ordered_Units:
+      zero_semantics: "bad_zero"
+      treat_zero_as_missing: true
+      min_signal_threshold: 5.0
+      allow_all_zero_series: false
+    GV:
+      zero_semantics: "bad_zero"
+      treat_zero_as_missing: true
+      min_signal_threshold: 5.0
+      allow_all_zero_series: false
+    SoROOS:
+      zero_semantics: "good_zero"
+      treat_zero_as_missing: false
+      allow_all_zero_series: true
+    Fill_Rate_Sourceable:
+      zero_semantics: "good_zero"
+      treat_zero_as_missing: false
+      allow_all_zero_series: true
+    Net_PPM:
+      zero_semantics: "unknown_zero"
+      treat_zero_as_missing: false
+      min_signal_threshold: 0.0
+      allow_all_zero_series: true
+    CPPU:
+      zero_semantics: "unknown_zero"
+      treat_zero_as_missing: false
+      min_signal_threshold: 0.0
+      allow_all_zero_series: true
+  # Growth handling parameters for zero base behaviors used in L4W performance
+  growth:
+    epsilon_share_for_zero_base: 0.01
+    # Optional cap for growth percentage magnitude (e.g., 5.0 = +/-500%)
+    max_growth_pct: 5.0
+  dimensions:
+    sales: ["Product_GMS", "Net_Ordered_Units"]
+    margin: ["Net_PPM", "PPM", "CP", "CPPU"]
+    availability: ["SoROOS", "Fill_Rate_Sourceable", "Vendor_Confirmation_Rate_Sourceable"]
+    traffic: ["GV", "Net_Ordered_Units"]
+  weights:
+    dimension:
+      sales: 0.30
+      margin: 0.30
+      availability: 0.20
+      traffic: 0.20
+  phase2_thresholds:
+    crap_ppm: 0.0
+    availability_risk: 0.7
+    low_history_weeks: 8
+  export_by_period:
+    enabled: false
+    frequency: "weekly"
+    mode: "tabs"
+    max_periods: 12
+    output_path: "outputs/periodic_exports"
+  # Phase 2 Enhanced Configuration
+  rolling_weeks: 8
+  weights_must_sum_to_1: true
+  metrics:
+    - name: GMS($)
+      weight: 0.40
+      direction: higher_is_better
+      clip_quantiles: [0.01, 0.99]
+      transform: log1p
+      standardize: robust_z
+      missing_policy: group_median
+    - name: FillRate(%)
+      weight: 0.30
+      direction: higher_is_better
+      clip_quantiles: [0.01, 0.99]
+      transform: logit
+      standardize: percentile
+      missing_policy: group_median
+    - name: SoROOS(%)
+      weight: 0.20
+      direction: lower_is_better
+      clip_quantiles: [0.02, 0.98]
+      transform: none
+      standardize: percentile
+      missing_policy: drop
+    - name: ASP($)
+      weight: 0.10
+      direction: higher_is_better
+      clip_quantiles: [0.01, 0.99]
+      transform: none
+      standardize: robust_z
+      missing_policy: group_median
+  penalties:
+    - name: low-registration-rate
+      when: "(metric == 'RegRate%') & (std_value < -1.0)"
+      apply: -30
+    - name: chronic-oos
+      when: "(metric == 'SoROOS(%)') & (std_value > 1.5) & (coverage < 0.9)"
+      apply: -25
+  caps:
+    min_score: -200
+    max_score: 1000
+  # Legacy config (kept for backward compatibility with old code paths)
+  thresholds:
+    excellent: 850
+    good: 700
+    fair: 550
+    poor: 0
+  metric_weights:
+    GMS($): 0.4
+    FillRate(%): 0.3
+    SoROOS(%): 0.2
+    ASP($): 0.1
+  metric_directions:
+    GMS($): up
+    FillRate(%): up
+    SoROOS(%): down
+    ASP($): up
+  improvement_rules:
+    FillRate(%):
+      normalized_lt: 0.5
+      label: Critical
+    SoROOS(%):
+      normalized_gt: 0.6
+      label: Critical
+    default:
+      normalized_lt: 0.4
+      label: Watch
+commentary:
+  normalized_input: data/processed/normalized_phase1.parquet
+  scorecard_vendor: data/processed/scorecards/vendor_scorecard.parquet
+  scorecard_asin: data/processed/scorecards/asin_scorecard.parquet
+  logging_level: INFO
+  logging_file_name: phase3_commentary.log
+  change_bands:
+    strong_increase: 0.1
+    moderate_increase: 0.04
+    flat: 0.01
+    moderate_decline: -0.04
+    strong_decline: -0.1
+  opportunity_thresholds:
+    default: 0.6
+  risk_thresholds:
+    default: 0.4
+  templates:
+    performance_summary:
+      strong_increase: "{entity} delivered a strong uptick in {metric} at {change_pct} WoW while reaching {current_value}."
+      moderate_increase: "{entity} recorded steady growth in {metric}, moving {direction} by {change_pct}."
+      flat: "{entity} maintained stable {metric} levels week over week."
+      moderate_decline: "{entity} saw a mild pullback in {metric} ({change_pct}); monitor execution."
+      strong_decline: "{entity} experienced a sharp decline in {metric} ({change_pct}). Immediate action recommended."
+      insufficient_history: "{entity} has limited history for {metric}; continue tracking future weeks."
+    opportunity:
+      below_threshold: "{metric} for {entity} sits below target at {current_value}; prioritize improvement initiatives."
+      improving: "{entity} is recovering in {metric}; sustain focus to surpass targets."
+      neutral: "No immediate opportunity signal for {metric}; maintain current plans."
+    risk:
+      strong_decline: "Risk alert: {metric} is deteriorating ({change_pct}) for {entity}."
+      moderate_decline: "Monitor {metric} for {entity}; recent softness of {change_pct} detected."
+      below_threshold: "{entity} remains below healthy levels in {metric} ({current_value})."
+      neutral: "No acute risk identified for {metric} this week."
+forecasting:
+  normalized_input: data/processed/normalized_phase1.parquet
+  output_dir: data/processed/forecasts
+  horizons_weeks:
+    - 4
+    - 6
+    - 12
+  accuracy_backtest_weeks: 4
+  min_history_weeks: 3
+  frequency: W-MON
+  metrics:
+    - GMS($)
+    - FillRate(%)
+    - SoROOS(%)
+    - ASP($)
+  ensemble_weights:
+    prophet: 0.6
+    lstm: 0.4
+    fallback: 1.0
+  metric_directions:
+    GMS($): up
+    FillRate(%): up
+    SoROOS(%): down
+    ASP($): up
+  uncertainty_buffer_pct: 0.15
+  risk_gain_thresholds:
+    gain_pct: 0.05
+    risk_pct: -0.05
+    gain_absolute: 0.0
+  metadata_fields:
+    include_history: true
+    include_methods: true
+dashboard:
+  output_dir: data/processed/dashboard
+  file_prefix: BrightStar_Dashboard
+  scoring:
+    vendor_sheet_name: "Vendor_Scoring"
+    asin_sheet_name: "ASIN_Scoring"
+    composite_color_scale:
+      min_color: "F2F2F2"
+      mid_color: "A9D08E"
+      max_color: "548235"
+    dimension_color_scale:
+      min_color: "BDD7EE"
+      mid_color: "C6E0B4"
+      max_color: "70AD47"
+    margin_color_scale:
+      min_color: "FCE4D6"
+      mid_color: "FFD966"
+      max_color: "C55A11"
+    availability_icon_set:
+      column: "SoROOS"
+      style: 3TrafficLights1
+      type: num
+      values: [0, 2, 5]
+  sheet_names:
+    summary: Summary
+    vendor_scorecard: Vendor Scorecards
+    asin_scorecard: ASIN Scorecards
+    commentary: Commentary
+    forecasts: Forecasts
+  sheet_order:
+    - Summary
+    - Vendor Scorecards
+    - ASIN Scorecards
+    - Commentary
+    - Forecasts
+  formatting:
+    header_fill: "1F4E78"
+    header_font_color: "FFFFFF"
+    body_font: Calibri
+    header_font_size: 12
+    body_font_size: 11
+    precision: 2
+    body_alignment:
+      horizontal: left
+      vertical: center
+      wrap_text: true
+    row_height: 20
+    header_row_height: 24
+    borders:
+      style: thin
+      color: D9D9D9
+    column_widths:
+      default: 18
+      overrides:
+        Commentary_Text: 60
+        Commentary_Insight: 60
+        Forecast_Potential_Gain: 20
+        Commentary_Type: 22
+    score_color_scale:
+      start_color: "F8696B"
+      mid_color: "FFEB84"
+      end_color: "63BE7B"
+      mid_value: 700
+      end_value: 950
+    icon_sets:
+      - column: Composite_Score
+        style: 3TrafficLights1
+        type: num
+        values:
+          - 0
+          - 700
+          - 900
+      - column: Forecast_Potential_Gain
+        style: 3Arrows
+        type: num
+        values:
+          - 0
+          - 5
+          - 10
+    improvement_fills:
+      Critical: "FFC7CE"
+      Watch: "FFEB9C"
+      default: "FFFFFF"
+    commentary_fills:
+      performance_summary: "C6EFCE"
+      opportunity: "FFEB9C"
+      risk: "FFC7CE"
+      default: "FFFFFF"
+    summary_number_format: "#,##0.00"
+  alerts:
+    score_high: 850
+    score_low: 550
+    risk_threshold: 0.4
+    opportunity_threshold: 0.7
+pipeline:
+  default_phases:
+    - phase1
+    - phase2
+    - phase3
+    - phase4
+    - phase5
+  allow_resume: true

@@ -1,0 +1,79 @@
+{
+  "timestamp": "2025-11-19T21:33:45.331807+00:00",
+  "phase1_parquet": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\phase1\\phase1_validated.parquet",
+  "phase2_output": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring",
+  "ran_successfully": false,
+  "error": "attempted relative import beyond top-level package",
+  "artifacts": {
+    "scoring_detailed": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\scoring_detailed.parquet",
+      "exists": false,
+      "size_bytes": null
+    },
+    "scoring_summary": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\scoring_summary.parquet",
+      "exists": false,
+      "size_bytes": null
+    },
+    "metric_readiness": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\metric_readiness.parquet",
+      "exists": false,
+      "size_bytes": null
+    },
+    "scoring_metadata": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\scoring_metadata.json",
+      "exists": true,
+      "size_bytes": 718
+    },
+    "transformed_metrics": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\transformed_metrics.parquet",
+      "exists": false,
+      "size_bytes": null
+    },
+    "delta_signals": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\delta_signals.parquet",
+      "exists": false,
+      "size_bytes": null
+    },
+    "dimension_signals": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\dimension_signals.parquet",
+      "exists": false,
+      "size_bytes": null
+    },
+    "session2A_metadata": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\session2A_metadata.json",
+      "exists": false,
+      "size_bytes": null
+    },
+    "asin_scoring_enriched": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\asin_scoring_enriched.parquet",
+      "exists": true,
+      "size_bytes": 490330
+    },
+    "vendor_scoring_enriched": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\vendor_scoring_enriched.parquet",
+      "exists": true,
+      "size_bytes": 58571
+    },
+    "asin_scorecards": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\asin_scorecards.parquet",
+      "exists": true,
+      "size_bytes": 307765
+    },
+    "vendor_scorecards": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\vendor_scorecards.parquet",
+      "exists": true,
+      "size_bytes": 39069
+    },
+    "asin_l4w_performance": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\asin_l4w_performance.parquet",
+      "exists": true,
+      "size_bytes": 50557
+    },
+    "scoring_parameters": {
+      "path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\data\\processed\\scoring\\scoring_parameters.json",
+      "exists": true,
+      "size_bytes": 736
+    }
+  }
+}

@@ -1,0 +1,21 @@
+default_output_root: "C:\\Users\\selsherb\\Documents\\AVS-E\\CL\\Brightlight\\dimensions"
+files:
+  dim_vendor: dim_vendor.parquet
+  dim_asin: dim_asin.parquet
+  dim_brand: dim_brand.parquet
+  dim_category: dim_category.parquet
+  dim_subcategory: dim_subcategory.parquet
+  dim_buyability: dim_buyability.parquet
+  dim_category_intelligence: dim_category_intelligence.parquet
+  log: dimension_builder_log.json
+  # Optional Phase 1e enrichment artifacts and inputs (if produced)
+  dim_contra_agreement: dim_contra_agreement.parquet
+  bridge_contra_asin: bridge_contra_asin.parquet
+  unified_calendar_map: ..\\data\\reference\\unified_calendar_map.csv
+  calendar_map: ..\\data\\reference\\calendar_map.csv
+  # Optional raw input references (not written by builder by default)
+  masterfile_info: ..\\data\\reference\\Masterfile.xlsx#Info
+  masterfile_info2: ..\\data\\reference\\Masterfile.xlsx#Info2
+  masterfile_buyability: ..\\data\\reference\\Masterfile.xlsx#Buyability
+  masterfile_inventory: ..\\data\\reference\\Masterfile.xlsx#Inventory
+  contra_agreements: ..\\data\\reference\\ContraCOGSAgreements.csv

@@ -1,0 +1,48 @@
+aliases:
+  # Identifiers
+  asin_id:
+    - asin
+    - asin id
+  vendor_id:
+    - vendor
+    - vendor code
+    - vendor_code
+  # Descriptive
+  item_name:
+    - item name
+    - title
+    - product_name
+  brand:
+    - brand_name
+    - brand name
+  category:
+    - cat
+    - category_name
+  subcategory:
+    - sub_category
+    - sub category
+  # Weeks
+  week:
+    - week_label
+    - week id
+    - date range
+    - week_raw
+  canonical_week_id:
+    - week_label
+    - canonical week id
+  # Common metrics (do not rename canonical metrics; only map raw aliases)
+  gms_value:
+    - gms($)
+    - gms ($)
+    - gms
+  ordered_units:
+    - units
+    - ordered units
+  net_ppm_value:
+    - net ppm ($)
+    - net_ppm($)
+    - net_ppm
+  gv_value:
+    - gv($)
+    - gv value
+    - gross value

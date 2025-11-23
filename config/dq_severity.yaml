@@ -1,0 +1,20 @@
+# Severity mapping for Phase 1f Severity-Driven DQ and Row Validity Engine
+# Only CRITICAL flags will mark a row invalid. Others annotate but do not block.
+
+dq_invalid_asin: CRITICAL
+dq_invalid_vendor_code: CRITICAL
+dq_misplaced_id: CRITICAL
+dq_week_mapping_failed: CRITICAL
+dq_unmapped_week: HIGH
+dq_missing_item_name: MEDIUM
+dq_missing_brand: MEDIUM
+dq_missing_category: MEDIUM
+dq_unknown_brand: LOW
+dq_unknown_category: LOW
+dq_buyability_missing: MEDIUM
+dq_unbuyable: HIGH
+dq_contra_mapping_broken: MEDIUM
+dq_inventory_risk: HIGH
+dq_archetype_unknown: LOW
+
+# Extensible: add new dq_* flags here with one of {LOW, MEDIUM, HIGH, CRITICAL}.

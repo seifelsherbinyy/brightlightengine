@@ -1,0 +1,16 @@
+# Metric normalization configuration for Phase 1
+
+# Fields that should be parsed as plain numbers (float64)
+numeric_fields:
+  - ordered_units
+
+# Fields that should be interpreted as currency and converted to float values
+currency_fields:
+  - gms_value
+  - net_ppm_value
+  - gv_value
+
+# Fields that should be interpreted as percentages and converted to fraction (0..1)
+percent_fields:
+  - fill_rate_pct
+  - in_stock_rate_pct

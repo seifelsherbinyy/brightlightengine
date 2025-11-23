@@ -1,0 +1,9 @@
+FULL RESET RUN SUMMARY (run_id=20251117_163530)
+output_root: C:\Users\selsherb\PycharmProjects\brightstar
+Phases:
+  - phase1: success (146.931s)
+  - phase2: failed (0.033s)
+  - phase3: failed (0.029s)
+  - phase4: failed (0.029s)
+  - phase6: success (0.053s)
+  - phase5: success (0.106s)

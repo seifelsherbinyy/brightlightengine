@@ -1,0 +1,27 @@
+filters:
+  min_severity: 0.15
+  per_vendor:
+    min: 3
+    max: 7
+
+thresholds:
+  metric_movements:
+    gms: 0.15
+    units: 0.15
+    gv: 0.15
+    instock: 0.05
+    fo_pct: 0.05
+    returns: 0.05
+    asp: 0.05
+  dimension_shifts:
+    profit: 0.10
+    growth: 0.10
+    availability: 0.08
+    inventory_risk: 0.08
+    quality: 0.08
+
+readiness:
+  min_completeness: 0.85
+
+formatting:
+  wbr_style: "avs"

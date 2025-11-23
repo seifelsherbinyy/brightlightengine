@@ -1,0 +1,47 @@
+{
+  "run_id": "20251117_163530",
+  "started_at": "2025-11-17T14:37:57.675693+00:00",
+  "config_path": "C:\\Users\\selsherb\\PycharmProjects\\brightstar\\config.yaml",
+  "output_root": "C:\\Users\\selsherb\\PycharmProjects\\brightstar",
+  "phases": [
+    {
+      "phase": "phase1",
+      "status": "success",
+      "duration_seconds": 146.931
+    },
+    {
+      "phase": "phase2",
+      "status": "failed",
+      "error": "Unable to locate normalized dataset. Ensure Phase 1 output exists before running Phase 2.",
+      "duration_seconds": 0.033
+    },
+    {
+      "phase": "phase3",
+      "status": "failed",
+      "error": "Unable to locate normalized dataset. Ensure Phases 1 and 2 outputs exist before running Phase 3.",
+      "duration_seconds": 0.029
+    },
+    {
+      "phase": "phase4",
+      "status": "failed",
+      "error": "Unable to locate normalized dataset. Ensure Phase 1 output exists before running Phase 4.",
+      "duration_seconds": 0.029
+    },
+    {
+      "phase": "phase6",
+      "status": "success",
+      "duration_seconds": 0.053,
+      "outputs_keys": [
+        "pairs",
+        "health"
+      ],
+      "count_pairs": 0,
+      "count_health": 0
+    },
+    {
+      "phase": "phase5",
+      "status": "success",
+      "duration_seconds": 0.106
+    }
+  ]
+}

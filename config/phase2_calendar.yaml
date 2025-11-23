@@ -1,0 +1,22 @@
+# Phase 2 – Calendar & Seasonality configuration (Session 2b)
+
+unified_calendar_path: data/reference/unified_calendar_map.csv
+join_key: canonical_week_id
+
+# Expected fields in the unified calendar CSV. Names can be adjusted but semantics must match.
+fields:
+  season_label: null         # e.g., RAMADAN, BF_WEEK, NORMAL
+  season_type: null          # e.g., PEAK, OFF_PEAK, SHOULDER, BASELINE
+  event_code: null           # e.g., BF, CM, RAMADAN_START, NONE
+  is_peak_week: null         # boolean
+  is_event_week: null        # boolean
+  quarter_label: null        # optional, e.g., Q1 2025
+
+# Defaults to use when fields are missing or null
+defaults:
+  season_label: "UNKNOWN_SEASON"
+  season_type: "BASELINE"
+  event_code: "NONE"
+  is_peak_week: false
+  is_event_week: false
+  quarter_label: null

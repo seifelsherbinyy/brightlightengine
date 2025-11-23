@@ -1,0 +1,41 @@
+# Optional mapping file used by Category Intelligence engine.
+# All keys are case-sensitive unless noted. Extend per your domain.
+
+code_to_category:
+  GL01: Grocery
+  GL02: Snacks
+  GL03: Beverages
+  GL10: Beauty
+  GL11: Personal Care
+  HC01: Home Care
+  BB01: Baby
+  HE01: Health
+  EL01: Electronics
+
+subcategory_to_category:
+  Chips: Snacks
+  Chocolate: Snacks
+  Shampoo: Beauty
+  Conditioner: Beauty
+  Laundry Detergent: Home Care
+  Dishwashing: Home Care
+  Infant Formula: Baby
+  Vitamins: Health
+
+category_keywords:
+  - { keyword: "detergent", category: "Home Care" }
+  - { keyword: "laundry", category: "Home Care" }
+  - { keyword: "dishwash", category: "Home Care" }
+  - { keyword: "shampoo", category: "Beauty" }
+  - { keyword: "conditioner", category: "Beauty" }
+  - { keyword: "lotion", category: "Personal Care" }
+  - { keyword: "vitamin", category: "Health" }
+  - { keyword: "supplement", category: "Health" }
+  - { keyword: "baby", category: "Baby" }
+  - { keyword: "diaper", category: "Baby" }
+  - { keyword: "chips", category: "Snacks" }
+  - { keyword: "chocolate", category: "Snacks" }
+  - { keyword: "soda", category: "Beverages" }
+  - { keyword: "juice", category: "Beverages" }
+  - { keyword: "tv", category: "Electronics" }
+  - { keyword: "headphone", category: "Electronics" }

@@ -1,0 +1,165 @@
+metrics:
+  - canonical_name: gms
+    synonyms: [GMS, gms_value, gross_merchandise_sales, revenue]
+    short_label: GMS
+    description: Gross Merchandise Sales value over the period.
+    directionality: higher_is_better
+    default_transform: robust_zscore
+    metric_family: value
+    is_value_metric: true
+    supports_seasonality_adjustment: true
+    category_relevance: []
+
+  - canonical_name: units
+    synonyms: [ordered_units, units_ordered, sales_units]
+    short_label: Units
+    description: Customer ordered units over the period.
+    directionality: higher_is_better
+    default_transform: robust_zscore
+    metric_family: volume
+    is_volume_metric: true
+    supports_seasonality_adjustment: true
+    category_relevance: []
+
+  - canonical_name: gv
+    synonyms: [glance_views, glanceviews, amazon_gv, gv_value]
+    short_label: GV
+    description: Product detail page Glance Views.
+    directionality: higher_is_better
+    default_transform: robust_zscore
+    metric_family: volume
+    is_volume_metric: true
+    supports_seasonality_adjustment: true
+    category_relevance: []
+
+  - canonical_name: cp
+    synonyms: [cost_price, cp_value]
+    short_label: CP
+    description: Cost price (per unit or blended).
+    directionality: lower_is_better
+    default_transform: robust_zscore
+    metric_family: price
+    is_price_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: cppu
+    synonyms: [cost_per_unit, cppu_value]
+    short_label: CPPU
+    description: Cost price per unit.
+    directionality: lower_is_better
+    default_transform: robust_zscore
+    metric_family: price
+    is_price_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: net_ppm
+    synonyms: [net_ppm_value, ppm, netppm]
+    short_label: Net PPM
+    description: Net Pure Product Margin.
+    directionality: higher_is_better
+    default_transform: robust_zscore
+    metric_family: price
+    is_price_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: contribution_margin
+    synonyms: [cm, contribution]
+    short_label: CM
+    description: Contribution margin across units and price.
+    directionality: higher_is_better
+    default_transform: robust_zscore
+    metric_family: value
+    is_value_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: instock_pct
+    synonyms: [instock, instock_percentage, in_stock_pct]
+    short_label: Instock%
+    description: Percentage of time in stock.
+    directionality: higher_is_better
+    default_transform: percentile
+    metric_family: availability
+    is_availability_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: soroos_pct
+    synonyms: [soroos, oos_pct, stockout_rate]
+    short_label: SoROOS%
+    description: Share of time out of stock.
+    directionality: lower_is_better
+    default_transform: percentile
+    metric_family: availability
+    is_availability_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: fo_pct
+    synonyms: [fo, fo_percentage, fill_out_pct]
+    short_label: FO%
+    description: Fill-out percentage or comparable service gap metric.
+    directionality: lower_is_better
+    default_transform: percentile
+    metric_family: availability
+    is_availability_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: onhand_units
+    synonyms: [on_hand_units, oh_units]
+    short_label: OnHand
+    description: On-hand inventory units.
+    directionality: lower_is_better
+    default_transform: robust_zscore
+    metric_family: inventory
+    is_inventory_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: aging_days
+    synonyms: [inventory_aging_days, aging]
+    short_label: Aging
+    description: Inventory aging in days.
+    directionality: lower_is_better
+    default_transform: robust_zscore
+    metric_family: inventory
+    is_inventory_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: stockout_count
+    synonyms: [oos_count, stockouts]
+    short_label: OOS Cnt
+    description: Count of stockout events.
+    directionality: lower_is_better
+    default_transform: robust_zscore
+    metric_family: inventory
+    is_inventory_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: returns_rate
+    synonyms: [returns_pct, return_rate]
+    short_label: Returns%
+    description: Customer returns rate.
+    directionality: lower_is_better
+    default_transform: percentile
+    metric_family: quality
+    is_quality_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []
+
+  - canonical_name: defect_rate
+    synonyms: [defects_pct, defect_pct]
+    short_label: Defects%
+    description: Product defect rate.
+    directionality: lower_is_better
+    default_transform: percentile
+    metric_family: quality
+    is_quality_metric: true
+    supports_seasonality_adjustment: false
+    category_relevance: []

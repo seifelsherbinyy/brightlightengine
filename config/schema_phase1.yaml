@@ -1,0 +1,13 @@
+required_columns: []
+
+# Logical dtypes for columns if present. Leave empty to auto-infer most as string and coerce numerics separately.
+dtypes: {}
+
+# Numeric fields to coerce with to_numeric (if they exist in the input).
+numeric_fields: []
+
+# Identifier fields for downstream awareness (non-enforced here). Add if known.
+id_fields: []
+
+# Optional valid ranges per metric or column (not enforced beyond percent heuristics in dq checks).
+valid_ranges: {}

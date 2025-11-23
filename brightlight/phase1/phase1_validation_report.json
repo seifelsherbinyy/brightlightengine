@@ -1,0 +1,52 @@
+{
+  "summary": {
+    "total_rows": 1406,
+    "valid_rows": 1406,
+    "invalid_rows": 0
+  },
+  "schema": {
+    "required_columns": [],
+    "dtypes": {}
+  },
+  "dq_flags": {
+    "dq_misplaced_id": 0,
+    "dq_unmapped_week": 1406,
+    "dq_numeric_cast_fail": 0,
+    "dq_missing_item_name": 1,
+    "dq_inferred_category": 0,
+    "dq_missing_category": 1406,
+    "dq_unknown_asin": 0,
+    "dq_unknown_vendor": 1406,
+    "dq_unknown_category": 0,
+    "dq_contra_mapping_broken": 0,
+    "dq_buyability_missing": 1406,
+    "dq_missing": 1406,
+    "dq_invalid_ids": 0,
+    "dq_numeric_issues": 0,
+    "dq_impossible_values": 0,
+    "dq_out_of_range": 0,
+    "dq_unbuyable": 0,
+    "dq_category_mismatch": 0,
+    "dq_week_coverage_low": 0,
+    "dq_inferred_brand": 0,
+    "dq_missing_brand": 0,
+    "dq_category_conflict": 0,
+    "dq_category_inferred": 0,
+    "dq_archetype_unassigned": 0,
+    "dq_unknown_brand": 0,
+    "dq_inventory_risk": 0,
+    "dq_invalid_vendor_code": 0
+  },
+  "dq_severity_counts": {
+    "Low": 0,
+    "Medium": 1406,
+    "High": 0,
+    "Critical": 0
+  },
+  "category_archetype_health": {
+    "unknown_categories": 1406,
+    "inferred_categories": 0,
+    "category_conflicts": 0,
+    "archetype_unassigned": 0
+  }
+}
