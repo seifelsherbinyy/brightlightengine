@@ -1,0 +1,4 @@
+metric_name,canonical_name,normalized_name,direction,description,keywords,group,is_default
+GMS($),GMS($),gms,up,Gross merchandise sales in dollars,,sales,True
+FillRate(%),FillRate(%),fillrate,up,Fill rate percentage,,operations,True
+SoROOS(%),SoROOS(%),soroos,down,Share of retail offer out of stock,,operations,False

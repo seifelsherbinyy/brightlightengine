@@ -2,7 +2,24 @@
 # Canonical metrics, variants, descriptions (Topic: Safe Canonical Registry)
 # ============================================================
 
-from typing import Dict, Sequence
+from pathlib import Path
+from typing import Dict, Sequence, Iterable, Optional
+
+import logging
+import pandas as pd
+
+LOGGER = logging.getLogger("brightstar")
+
+REGISTRY_COLUMNS = [
+    "metric_name",
+    "canonical_name",
+    "normalized_name",
+    "direction",
+    "description",
+    "keywords",
+    "group",
+    "is_default",
+]
 
 canonical_metrics: Sequence[str] = [
     # Demand / Traffic
@@ -539,3 +556,136 @@ metric_descriptions: Dict[str, str] = {
     "Confidence_Interval_Width": "Width of forecast confidence interval, representing uncertainty.",
     "Reliability_Score": "Overall metric readiness, data quality, and completeness score.",
 }
+
+
+def normalize_metric_key(metric_name: Optional[str]) -> str:
+    """Normalize a metric name into a lowercase, underscore-delimited key."""
+
+    if not metric_name:
+        return ""
+
+    cleaned = str(metric_name)
+    # Replace any non-alphanumeric characters with underscores
+    for ch in "-()/,%$":
+        cleaned = cleaned.replace(ch, " ")
+    cleaned = "".join(ch if ch.isalnum() else "_" for ch in cleaned)
+    while "__" in cleaned:
+        cleaned = cleaned.replace("__", "_")
+    return cleaned.strip("_").lower()
+
+
+def load_metric_registry(path: Path | str) -> pd.DataFrame:
+    """Load the metric registry from CSV/Parquet or return an empty frame with schema."""
+
+    registry_path = Path(path)
+    registry_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if not registry_path.exists():
+        LOGGER.warning("Metric registry empty. Falling back to defaults. Missing file at %s", registry_path)
+        return pd.DataFrame(columns=REGISTRY_COLUMNS)
+
+    suffix = registry_path.suffix.lower()
+    if suffix == ".parquet":
+        df = pd.read_parquet(registry_path)
+    else:
+        df = pd.read_csv(registry_path)
+
+    missing_cols = [c for c in REGISTRY_COLUMNS if c not in df.columns]
+    if missing_cols:
+        raise ValueError(f"Metric registry at {registry_path} missing columns: {missing_cols}")
+
+    if df.empty:
+        LOGGER.warning("Metric registry empty. Falling back to defaults.")
+
+    return df.reindex(columns=REGISTRY_COLUMNS)
+
+
+def match_to_canonical(metric_name: Optional[str], variants: Dict[str, Sequence[str]] = metric_variants) -> Optional[str]:
+    """Return the canonical metric name for a given variant, or None if unknown."""
+
+    if not metric_name:
+        return None
+
+    key = normalize_metric_key(metric_name)
+    for canonical, names in variants.items():
+        options: Iterable[str] = [canonical, *names]
+        if any(normalize_metric_key(option) == key for option in options):
+            return canonical
+    return None
+
+
+def detect_new_metrics(normalized_df: pd.DataFrame, registry_df: pd.DataFrame) -> list[str]:
+    """Identify metrics present in normalized_df but absent from the registry."""
+
+    registry_keys = {
+        normalize_metric_key(m)
+        for m in registry_df.get("metric_name", [])
+        if pd.notna(m)
+    }
+    seen: set[str] = set()
+    unknown: list[str] = []
+
+    for metric in normalized_df.get("metric", []):
+        if pd.isna(metric):
+            continue
+        norm = normalize_metric_key(metric)
+        if norm and norm not in registry_keys and norm not in seen:
+            unknown.append(metric)
+            seen.add(norm)
+    return unknown
+
+
+def append_pending_metrics(path: Path | str, metrics: Iterable[str]) -> None:
+    """Append unknown metrics to the pending metrics CSV without duplicates."""
+
+    pending_path = Path(path)
+    pending_path.parent.mkdir(parents=True, exist_ok=True)
+
+    existing = pd.DataFrame(columns=["metric_name"])
+    if pending_path.exists():
+        existing = pd.read_csv(pending_path)
+
+    incoming = pd.DataFrame({"metric_name": [m for m in metrics if m is not None]})
+    combined = pd.concat([existing, incoming], ignore_index=True)
+    combined = combined.drop_duplicates(subset=["metric_name"])
+    combined.to_csv(pending_path, index=False)
+
+
+def bootstrap_predefined_metrics(registry_df: pd.DataFrame) -> pd.DataFrame:
+    """Ensure the registry contains at least the canonical metric set with descriptions."""
+
+    if registry_df is None or not isinstance(registry_df, pd.DataFrame):
+        registry_df = pd.DataFrame(columns=REGISTRY_COLUMNS)
+    df = registry_df.copy()
+
+    for col in REGISTRY_COLUMNS:
+        if col not in df.columns:
+            df[col] = None
+
+    existing_keys = {
+        normalize_metric_key(name)
+        for name in df["metric_name"].dropna().tolist()
+    }
+
+    rows = []
+    for canonical in canonical_metrics:
+        norm_key = normalize_metric_key(canonical)
+        if norm_key in existing_keys:
+            continue
+        rows.append(
+            {
+                "metric_name": canonical,
+                "canonical_name": canonical,
+                "normalized_name": norm_key,
+                "direction": "up",
+                "description": metric_descriptions.get(canonical, ""),
+                "keywords": "",
+                "group": "",
+                "is_default": True,
+            }
+        )
+
+    if rows:
+        df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
+
+    return df[REGISTRY_COLUMNS]

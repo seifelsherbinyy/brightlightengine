@@ -267,7 +267,10 @@ def run_phase2(config_path: str = "config.yaml") -> Dict[str, pd.DataFrame]:
     logger.info("Phase 2 reading normalized Phase 1 output from: %s", input_path.resolve())
     if not input_path.exists():
         raise FileNotFoundError(f"Normalized Phase 1 output not found at {input_path}. Run Phase 1 first.")
-    norm_df = pd.read_parquet(input_path)
+    if input_path.suffix.lower() == ".csv":
+        norm_df = pd.read_csv(input_path)
+    else:
+        norm_df = pd.read_parquet(input_path)
     if norm_df.empty:
         logger.error("Phase 2 loaded an EMPTY Phase 1 file — likely path mismatch.")
         raise RuntimeError("Normalized Phase 1 data missing.")
