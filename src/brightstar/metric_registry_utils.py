@@ -2,7 +2,7 @@
 # Canonical metrics, variants, descriptions (Topic: Safe Canonical Registry)
 # ============================================================
 
-from typing import Sequence
+from typing import Dict, Sequence
 
 canonical_metrics: Sequence[str] = [
     # Demand / Traffic
