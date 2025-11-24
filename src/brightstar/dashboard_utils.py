@@ -88,7 +88,12 @@ def _load_dataframe(candidates: Iterable[Path], logger: Optional[logging.Logger]
                     logger.warning("Unable to read parquet file %s (%s). Trying next candidate.", path, exc)
                 continue
         if suffix in {".csv", ".txt"}:
-            return pd.read_csv(path)
+            try:
+                return pd.read_csv(path)
+            except UnicodeDecodeError as exc:
+                if logger:
+                    logger.warning("Unable to decode CSV %s (%s); returning empty frame.", path, exc)
+                return pd.DataFrame()
         if suffix in {".xlsx", ".xlsm"}:
             return pd.read_excel(path)
     return pd.DataFrame()

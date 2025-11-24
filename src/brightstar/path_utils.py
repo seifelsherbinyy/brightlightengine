@@ -13,8 +13,8 @@ def get_phase1_normalized_path(config: dict) -> Path:
     if paths_cfg.get("normalized_output"):
         out_path = Path(paths_cfg["normalized_output"])
     else:
-        root = Path(paths_cfg.get("output_root", Path.cwd()))
-        out_path = root / "data" / "processed" / "normalized" / "normalized_phase1.parquet"
+        processed_dir = Path(paths_cfg.get("processed_dir", Path(paths_cfg.get("output_root", Path.cwd())) / "data" / "processed"))
+        out_path = processed_dir / "normalized_phase1.parquet"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     return out_path
 

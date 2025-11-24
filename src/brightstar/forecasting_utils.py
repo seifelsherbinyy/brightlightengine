@@ -250,10 +250,13 @@ def load_normalized_dataset(config: Dict, logger: Optional[logging.Logger] = Non
     """Load the normalized dataset created during Phase 1."""
 
     forecasting_config = config.get("forecasting", {})
+    allow_empty = bool(forecasting_config.get("allow_empty_normalized", True))
     # 1) Canonical path from Phase 1 helper
     try:
         canonical = get_phase1_normalized_path(config)
         if canonical.exists():
+            if canonical.suffix.lower() == ".csv":
+                return pd.read_csv(canonical)
             return pd.read_parquet(canonical)
     except Exception as exc:
         if logger:
@@ -286,6 +289,13 @@ def load_normalized_dataset(config: Dict, logger: Optional[logging.Logger] = Non
                     continue
             if path.suffix.lower() in {".csv", ".txt"}:
                 return pd.read_csv(path)
+
+    if allow_empty:
+        if logger:
+            logger.warning(
+                "Unable to locate normalized dataset; returning empty frame for forecasting."
+            )
+        return pd.DataFrame()
 
     raise FileNotFoundError(
         "Unable to locate normalized dataset. Ensure Phase 1 output exists before running Phase 4."

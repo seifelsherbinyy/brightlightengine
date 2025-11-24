@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 import difflib
 
 from .naming import normalize_metric_name
@@ -33,10 +33,10 @@ def _load_aliases_json(path: str | Path | None) -> Dict[str, str]:
 
 
 def resolve_configured_metrics(
-    config_metrics: Iterable[str],
-    available_columns: Iterable[str],
-    alias_json: str | Path | None = None,
-    fuzzy_cutoff: float = 0.84,
+    configured_metrics: Sequence[str],
+    available_columns: Sequence[str],
+    alias_json: Optional[Path] = None,
+    fuzzy_cutoff: float = 0.8,
 ) -> Tuple[Dict[str, str], List[str]]:
     """Resolve scoring metrics to available Phase‑1 metric columns.
 
@@ -48,7 +48,7 @@ def resolve_configured_metrics(
       3) Fuzzy match using difflib.get_close_matches with cutoff.
       4) Unresolved configured names produce a warning.
     """
-    configured = list(config_metrics)
+    configured = list(configured_metrics)
     available = list(available_columns)
     warnings: List[str] = []
     mapping: Dict[str, str] = {}

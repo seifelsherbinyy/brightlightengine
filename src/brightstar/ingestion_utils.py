@@ -1683,7 +1683,7 @@ def write_output(df: pd.DataFrame, config: Dict, logger: logging.Logger, output_
 
     # CSV fallback (always attempt)
     try:
-        df.to_csv(csv_path, index=False)
+        df.to_csv(csv_path, index=False, encoding="utf-8")
         if primary_path is None:
             primary_path = csv_path
         wrote_any = True or wrote_any
@@ -2056,21 +2056,16 @@ def finalize_weeks(df: pd.DataFrame, lookup: WeekLookup, logger: logging.Logger,
                     pass
 
         if not wk_label:
-            # Default to dominant year W01
+            # Default: leave unresolved so downstream filtering can drop safely
             issues.append({
                 "index": idx,
                 "week_raw": raw,
-                "note": "Unable to resolve week; defaulted to dominant year W01",
+                "note": "Unable to resolve week; dropped from normalized output",
                 "source_file": out.at[idx, "source_file"] if "source_file" in out.columns else None,
                 "metric": out.at[idx, "metric"] if "metric" in out.columns else None,
                 "asin": out.at[idx, "asin"] if "asin" in out.columns else None,
             })
-            fb = lookup._find_by_year_week(int(dominant_year), 1)  # type: ignore[attr-defined]
-            if fb:
-                wk_label, wk_start, wk_end = fb
-            else:
-                wk_label = f"{dominant_year}W01"
-                wk_start, wk_end = None, None
+            wk_label, wk_start, wk_end = None, None, None
 
         out.at[idx, "week_label"] = wk_label
         out.at[idx, "week_start"] = wk_start
