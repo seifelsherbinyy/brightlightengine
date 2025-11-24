@@ -9,8 +9,12 @@ def get_phase1_normalized_path(config: dict) -> Path:
     Uses paths.output_root as the base and ensures the parent directory exists.
     """
 
-    root = Path(config["paths"]["output_root"]) if "output_root" in config.get("paths", {}) else Path.cwd()
-    out_path = root / "data" / "processed" / "normalized" / "normalized_phase1.parquet"
+    paths_cfg = config.get("paths", {}) if isinstance(config, dict) else {}
+    if paths_cfg.get("normalized_output"):
+        out_path = Path(paths_cfg["normalized_output"])
+    else:
+        root = Path(paths_cfg.get("output_root", Path.cwd()))
+        out_path = root / "data" / "processed" / "normalized" / "normalized_phase1.parquet"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     return out_path
 
