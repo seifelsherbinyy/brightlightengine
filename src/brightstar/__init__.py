@@ -1,5 +1,6 @@
-"""Brightstar analytics toolkit."""
+"""
+Brightstar package initializer.
+Avoid eager imports to prevent circular failures during test collection.
+"""
 
-from .brightstar_pipeline import run_pipeline
-
-__all__ = ["run_pipeline"]
+__all__ = []
