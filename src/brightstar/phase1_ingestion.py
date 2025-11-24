@@ -223,6 +223,16 @@ def run_phase1(config_path: str = "config.yaml", input_files: Optional[Iterable[
     # Eliminate null/blank week labels; log unresolved cases
     combined = finalize_weeks(combined, lookup, logger, issues_output=output_dir / "week_parsing_issues.csv")
 
+    # Drop unresolved/invalid weeks to avoid bogus defaults
+    try:
+        valid_mask = combined["week_label"].notna() & combined["week_label"].astype(str).str.match(r"^\d{4}W\d{2}$")
+        dropped = int(len(combined) - valid_mask.sum())
+        if dropped:
+            logger.warning("Phase 1 validation: %d rows with unmapped week_start_date dropped from output.", dropped)
+        combined = combined[valid_mask].copy()
+    except Exception:
+        pass
+
     # Canonicalize metric names using predefined variant map (pure local logic)
     try:
         if not combined.empty and "metric" in combined.columns:
@@ -289,15 +299,31 @@ def run_phase1(config_path: str = "config.yaml", input_files: Optional[Iterable[
     output_path = write_output(combined, config, logger, output_dir=output_dir)
     logger.info("Normalized dataset written to %s", output_path)
 
-    # Canonical normalized location under output_root with atomic replace
+    # Canonical normalized locations under processed_dir (CSV + Parquet)
     try:
-        canonical_path = get_phase1_normalized_path(config)
-        tmp_path = canonical_path.with_suffix(".tmp.parquet")
-        combined.to_parquet(tmp_path, index=False)
-        tmp_path.replace(canonical_path)
-        logger.info("Phase 1 wrote normalized output to canonical path: %s", canonical_path.resolve())
+        processed_dir = Path(config["paths"].get("processed_dir", get_phase1_normalized_path(config).parent))
+        processed_dir.mkdir(parents=True, exist_ok=True)
+        canonical_csv = processed_dir / "normalized_phase1.csv"
+        canonical_parquet = processed_dir / "normalized_phase1.parquet"
+
+        combined.to_csv(canonical_csv, index=False, encoding="utf-8")
+        combined.to_parquet(canonical_parquet, index=False)
+        logger.info(
+            "Phase 1 wrote normalized output to canonical paths: %s (csv) and %s (parquet)",
+            canonical_csv.resolve(),
+            canonical_parquet.resolve(),
+        )
+
+        # Respect explicit normalized_output path for downstream compatibility
+        configured_path = get_phase1_normalized_path(config)
+        configured_path.parent.mkdir(parents=True, exist_ok=True)
+        if configured_path.suffix.lower() == ".csv":
+            combined.to_csv(configured_path, index=False, encoding="utf-8")
+        else:
+            combined.to_parquet(configured_path, index=False)
+        logger.info("Phase 1 wrote normalized output to configured path: %s", configured_path.resolve())
     except Exception as _exc:
-        logger.warning("Failed to persist canonical normalized parquet; downstream phases may not find it.")
+        logger.warning("Failed to persist canonical normalized outputs; downstream phases may not find them.")
 
     # Write validation and summary artifacts
     report_paths = write_phase1_reports(combined, logger, output_dir=output_dir)
